@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
-@Getter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomDto {
@@ -21,15 +21,6 @@ private Long id;
 	
 	private HashMap<String, String> dates;
 	private String roomType;
-	
-	
-	public RoomDto(List<Long> guestIds, Long roomNumber, HashMap<String, String> dates, String roomType) {
-		super();
-		this.guestIds = guestIds;
-		this.roomNumber = roomNumber;
-		this.dates = dates;
-		this.roomType = roomType;
-	}
 	
 	
 

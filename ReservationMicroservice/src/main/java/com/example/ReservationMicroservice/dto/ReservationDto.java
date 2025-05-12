@@ -5,21 +5,23 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReservationDto {
 	
 	private Long id;
 	
+	@Min(1)
 	private Long guestId;
 	
 	@NotNull(message = "Code cannot be null")
@@ -44,17 +46,6 @@ public class ReservationDto {
 	private List<Long> roomNumbers;
 	
 	
-	public ReservationDto(String code, Long numberOfChildren, Long numberofAdults, String check_inDate,
-			String check_outDate, String roomType, List<Long> roomNumbers) {
-		super();
-		Code = code;
-		this.numberOfChildren = numberOfChildren;
-		this.numberofAdults = numberofAdults;
-		this.check_inDate = check_inDate;
-		this.check_outDate = check_outDate;
-		this.roomType = roomType;
-		this.roomNumbers = roomNumbers;
-	}
 	
 	
 

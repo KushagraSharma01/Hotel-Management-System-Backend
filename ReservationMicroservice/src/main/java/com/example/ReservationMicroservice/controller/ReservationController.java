@@ -49,7 +49,7 @@ public class ReservationController {
 
 	@CircuitBreaker(name = "Create", fallbackMethod = "fallbackMethod")
 	@PostMapping("/create/{id}")
-	public ResponseEntity<ReservationDto> create(@PathVariable Long id, @Valid @RequestBody ReservationDto inDto) throws Exception{
+	public ResponseEntity<ReservationDto> create(@Valid @PathVariable Long id, @Valid @RequestBody ReservationDto inDto) throws Exception{
 		
 		inDto.setGuestId(id);
 		

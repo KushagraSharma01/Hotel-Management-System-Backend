@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(value = RoomsNotAvailableException.class)
 	public ResponseEntity<String> roomsNotAvailable(RoomsNotAvailableException e){
 		
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(value = Exception.class)

@@ -4,14 +4,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 public class GuestDto {
 
 	private Long id;
@@ -36,19 +36,6 @@ public class GuestDto {
 	private String gender;
 	@NotNull(message = "address cannot be null")
 	private String address;
-	
-	
-	
-	public GuestDto(String memberCode,String phoneNumber, String company, String name,String email, String gender, String address) {
-		super();
-		this.memberCode = memberCode;
-		PhoneNumber = phoneNumber;
-		Company = company;
-		this.name = name;
-		this.email = email;
-		this.gender = gender;
-		this.address = address;
-	}
 	
 	
 	

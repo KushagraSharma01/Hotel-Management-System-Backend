@@ -45,7 +45,7 @@ public class GuestServiceTest {
 	@DisplayName("createTest")
 	void createTest() throws Exception{
 		
-		GuestDto newDto = new GuestDto("ABC123", "976543210", "CapGemini", "Kushagra Sharma", "kush@gmail.com", "Male", "Agra");
+		GuestDto newDto = new GuestDto(1L, "ABC123", "976543210", "CapGemini", "Kushagra Sharma", "kush@gmail.com", "Male", "Agra");
 		
 		//checking
 		ResponseEntity<GuestDto> response = guestServiceImpl.create(newDto);
@@ -67,7 +67,7 @@ public class GuestServiceTest {
 	@DisplayName("getTest")
 	void getTest() throws Exception{
 		
-		GuestDto newDto = new GuestDto("ABC123", "976543210", "CapGemini", "Kushagra Sharma", "kush@gmail.com", "Male", "Agra");
+		GuestDto newDto = new GuestDto(1L, "ABC123", "976543210", "CapGemini", "Kushagra Sharma", "kush@gmail.com", "Male", "Agra");
 		
 		guestServiceImpl.create(newDto);  
 		
@@ -93,12 +93,12 @@ public class GuestServiceTest {
 	void editTest() throws Exception{
 		
 		//creating a newDto
-		GuestDto newDto = new GuestDto("ABC123", "976543210", "CapGemini", "Kushagra Sharma", "kush@gmail.com", "Male", "Agra");
+		GuestDto newDto = new GuestDto(1L, "ABC123", "976543210", "CapGemini", "Kushagra Sharma", "kush@gmail.com", "Male", "Agra");
 
 		guestServiceImpl.create(newDto);  
 		
 
-		GuestDto updatedDto = new GuestDto("ABC123", "976543210", "CapGemini", "Vishesh Sharma", "vishesh@gmail.com", "Male", "Agra");
+		GuestDto updatedDto = new GuestDto(1L, "ABC123", "976543210", "CapGemini", "Vishesh Sharma", "vishesh@gmail.com", "Male", "Agra");
 		
 		//mocking the response for the updatedDto
 		Mockito.lenient().when(guestRepository.save(any(GuestEntity.class))).thenReturn(new GuestEntity("ABC123", "976543210", "CapGemini", "Vishesh Sharma", "vishesh@gmail.com", "Male", "Agra"));
@@ -124,7 +124,7 @@ public class GuestServiceTest {
 	void deleteTest() throws Exception{
 		
 		//creating a newDto
-		GuestDto newDto = new GuestDto("ABC123", "976543210", "CapGemini", "Kushagra Sharma", "kush@gmail.com", "Male", "Agra");
+		GuestDto newDto = new GuestDto(1L, "ABC123", "976543210", "CapGemini", "Kushagra Sharma", "kush@gmail.com", "Male", "Agra");
 
 		guestServiceImpl.create(newDto);  
 				

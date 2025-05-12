@@ -1,6 +1,8 @@
 package com.example.ReservationMicroservice.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -35,7 +37,7 @@ public class ReservationServiceImpl implements ReservationService{
 		ReservationEntity newReservation = mapper.map(inDto, ReservationEntity.class);
 		
 //		checking if the rooms selected are available or not
-		List<Long> rooms = proxy.filter(inDto.getCheck_inDate(), inDto.getCheck_outDate(), inDto.getRoomType()).getBody().stream().map(room -> room.getRoomNumber()).collect(Collectors.toList());
+		Set<Long> rooms = proxy.filter(inDto.getCheck_inDate(), inDto.getCheck_outDate(), inDto.getRoomType()).getBody().stream().map(room -> room.getRoomNumber()).collect(Collectors.toSet());
 		boolean available = true;
 		
 		for(Long i: inDto.getRoomNumbers()) {

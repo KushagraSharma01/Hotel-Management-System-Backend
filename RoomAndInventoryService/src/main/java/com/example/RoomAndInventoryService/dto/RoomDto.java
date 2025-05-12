@@ -6,12 +6,12 @@ import java.util.List;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
-@Getter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomDto {
@@ -30,14 +30,6 @@ public class RoomDto {
 	@Pattern(regexp = "^(AC)|(Non-AC)$", message = "Room type can either AC or Non-AC")
 	private String roomType;
 	
-	
-	public RoomDto(List<Long> guestIds, Long roomNumber, HashMap<String, String> dates, String roomType) {
-		super();
-		this.guestIds = guestIds;
-		this.roomNumber = roomNumber;
-		this.dates = dates;
-		this.roomType = roomType;
-	}
 	
 	
 

@@ -30,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
-
 @WebMvcTest(GuestController.class)
 @ExtendWith(MockitoExtension.class)
 public class GuestControllerTest {
