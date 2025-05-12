@@ -28,7 +28,6 @@ user high subjective satisfaction.
 • Manage Guest (Add, Update Guest)<br>
 • Manage Room Details (Add, Update, Delete)<br>
 • Manage Staff (Add, Update, Delete, View)<br>
-i-Transform<br>
 • Manage Inventory (Add, Edit, Delete)<br>
 • Set Rates<br>
 • Retrieve Reports (Staff payment, Income)<br>
