@@ -5,11 +5,10 @@
 The introducing software, Hotel Management System which is going to be implemented for Hotel will 
 automate the major operations of the hotel. The Reservation System is to keep track in room and hall 
 reservation and check availability. The Room Management System is for manage all room types room 
-services. The Inventory Control System will keep track in all inventories of the hotel and guest details 
-will handled by guest management. Administration department will monitor the all .There is three End 
-Users for HMS. The End Users are Owner, Manager and Receptionist. Owner can access to all system 
-functionalities without any restrictions. Manager can access to all system functionalities with limited 
-restrictions. Receptionist can only access to the Reservation management section. To keep restrictions 
+services. Guest details will handled by guest management. Administration department will monitor the all .
+There is three End Users for HMS. The End Users are Owner, Manager and Receptionist. Owner can access to 
+all system functionalities without any restrictions. Manager can access to all system functionalities with 
+limited restrictions. Receptionist can only access to the Reservation management section. To keep restrictions 
 for each End User levels HMS can create different Login functions.
 
 The objectives of the automated Hotel Management System is to simplify the day to day processes of 
