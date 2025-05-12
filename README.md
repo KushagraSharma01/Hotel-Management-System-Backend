@@ -20,17 +20,17 @@ information retrieval are some benefits the development team going to present wi
 system should be user appropriate, easy to use, provide easy recovery of errors and have an overall end 
 user high subjective satisfaction.
 
-#1.1 Product Functions
-• Make Reservations
-• Search Rooms
-• Add Payment
-• Issue Bills
-• Manage Guest (Add, Update Guest)
-• Manage Room Details (Add, Update, Delete)
-• Manage Staff (Add, Update, Delete, View)
-i-Transform
-• Manage Inventory (Add, Edit, Delete)
-• Set Rates
-• Retrieve Reports (Staff payment, Income)
-• Manage Users (Add, Update, Delete)
-• E-mail notifications 
+#1.1 Product Functions<br>
+• Make Reservations<br>
+• Search Rooms<br>
+• Add Payment<br>
+• Issue Bills<br>
+• Manage Guest (Add, Update Guest)<br>
+• Manage Room Details (Add, Update, Delete)<br>
+• Manage Staff (Add, Update, Delete, View)<br>
+i-Transform<br>
+• Manage Inventory (Add, Edit, Delete)<br>
+• Set Rates<br>
+• Retrieve Reports (Staff payment, Income)<br>
+• Manage Users (Add, Update, Delete)<br>
+• E-mail notifications <br>
