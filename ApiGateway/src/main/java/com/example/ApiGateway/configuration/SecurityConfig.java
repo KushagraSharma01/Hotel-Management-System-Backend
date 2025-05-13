@@ -4,19 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-<<<<<<< HEAD
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.CorsConfiguration;
-=======
-import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
-
->>>>>>> 7cd6b6941e801dc5b2cf4da7f8f3de81aaa09964
 
 @EnableWebFluxSecurity
 @Configuration
@@ -29,10 +22,7 @@ public class SecurityConfig {
 	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) throws Exception{
 		
 		return http.csrf(customizer -> customizer.disable())
-<<<<<<< HEAD
 					.cors(cust -> cust.configurationSource(corsConfigurationSource()))
-=======
->>>>>>> 7cd6b6941e801dc5b2cf4da7f8f3de81aaa09964
 				   .authorizeExchange(exchange -> exchange.pathMatchers("/auth/login")
 						   									.permitAll()
 						   									.anyExchange()
@@ -40,7 +30,6 @@ public class SecurityConfig {
 				   .addFilterBefore(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
 				   .build();
 	}
-<<<<<<< HEAD
 	
 	
 	@Bean
@@ -59,7 +48,5 @@ public class SecurityConfig {
 
         return  source;
     }
-=======
->>>>>>> 7cd6b6941e801dc5b2cf4da7f8f3de81aaa09964
 
 }
