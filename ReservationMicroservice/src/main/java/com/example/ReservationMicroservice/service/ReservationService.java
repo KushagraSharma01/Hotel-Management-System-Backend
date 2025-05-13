@@ -6,10 +6,11 @@ import org.springframework.http.ResponseEntity;
 
 import com.example.ReservationMicroservice.dto.ReservationDto;
 import com.example.ReservationMicroservice.dto.RoomDto;
+import com.example.ReservationMicroservice.dto.StripeResponse;
 
 public interface ReservationService {
 
-	public ResponseEntity<ReservationDto> create(ReservationDto inDto) throws Exception;
+	public ResponseEntity<StripeResponse> create(ReservationDto inDto) throws Exception;
 	
 	public ResponseEntity<List<ReservationDto>> getAllForGuest(Long id) throws Exception;
 	
@@ -23,4 +24,5 @@ public interface ReservationService {
 	
 	public ResponseEntity<List<RoomDto>> filter(String checkInDate, String checkOutDate, String roomType) throws Exception;
 	
+	public ResponseEntity<String> confirm(String sessionId, String status) throws Exception;
 }

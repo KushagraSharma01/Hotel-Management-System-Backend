@@ -1,5 +1,9 @@
 package com.example.ReservationMicroservice.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,11 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.ReservationMicroservice.dto.BookingDto;
+import com.example.ReservationMicroservice.dto.ProductRequest;
 import com.example.ReservationMicroservice.dto.ReservationDto;
 import com.example.ReservationMicroservice.dto.RoomDto;
+import com.example.ReservationMicroservice.dto.StripeResponse;
 import com.example.ReservationMicroservice.entity.ReservationEntity;
 import com.example.ReservationMicroservice.exceptions.ReservationNotFoundException;
 import com.example.ReservationMicroservice.exceptions.RoomsNotAvailableException;
@@ -32,13 +37,28 @@ public class ReservationServiceImpl implements ReservationService{
 	@Autowired
 	private RoomServiceProxy proxy;
 	
-	public ResponseEntity<ReservationDto> create(ReservationDto inDto) throws Exception{
+	@Autowired 
+	private PaymentServiceProxy paymentProxy;
+	
+	public ResponseEntity<StripeResponse> create(ReservationDto inDto) throws Exception{
 		
 		ReservationEntity newReservation = mapper.map(inDto, ReservationEntity.class);
 		
-//		checking if the rooms selected are available or not
-		Set<Long> rooms = proxy.filter(inDto.getCheck_inDate(), inDto.getCheck_outDate(), inDto.getRoomType()).getBody().stream().map(room -> room.getRoomNumber()).collect(Collectors.toSet());
-		boolean available = true;
+		// getting all rooms from room service of type roomType
+		
+		Set<RoomDto> roomDtos = proxy.filter(inDto.getRoomType()).getBody().stream().collect(Collectors.toSet());
+		Set<Long> rooms = roomDtos.stream().map(room -> room.getRoomNumber()).collect(Collectors.toSet());
+		
+		//getting all notAvailable rooms 
+		Set<Long> notAvailable = notAvailable(inDto.getCheck_inDate(), inDto.getCheck_outDate(), inDto.getRoomType());
+		
+		// removing the notAvailable rooms from all rooms of given type
+		for(Long i: notAvailable) {
+			if(rooms.contains(i))
+				rooms.remove(i);
+		}
+		
+		boolean available = true; 
 		
 		for(Long i: inDto.getRoomNumbers()) {
 			if(!rooms.contains(i)) {
@@ -50,15 +70,30 @@ public class ReservationServiceImpl implements ReservationService{
 		if(!available || rooms.isEmpty())
 			throw new RoomsNotAvailableException("Rooms not available for reservation");
 		
-///		booking rooms from the room service
-		proxy.book(new BookingDto(inDto.getRoomNumbers(), inDto.getCheck_inDate(), inDto.getCheck_outDate(), inDto.getGuestId()));
+		//calculating total amount
+		Long amount = 0L;
+		for(RoomDto room: roomDtos) {
+			if(rooms.contains(room.getRoomNumber()))
+				amount += room.getPrice();
+		}
+		
+		//creating a ProductRequest to send to payment service
+		ProductRequest newProduct = new ProductRequest(amount*100, 1L, "Make Reservation", "INR");
+		
+		//checking out to payment service
+		StripeResponse response = paymentProxy.checkout(newProduct).getBody();
+		
+		newReservation.setStatus("Pending");
+		newReservation.setDate(new Date());
+		newReservation.setSessionId(response.getSessionId());
 		
 		newReservation = reservationRepository.save(newReservation);
 		
 		ReservationDto resDto =  mapper.map(newReservation, ReservationDto.class);
 		
-		return new ResponseEntity<>(resDto, HttpStatus.OK);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
+
 	
 	public ResponseEntity<ReservationDto> get(Long id) throws Exception{
 		
@@ -125,8 +160,112 @@ public class ReservationServiceImpl implements ReservationService{
 		
 	}
 	
+	public ResponseEntity<String> confirm(String sessionId, String status) throws Exception{
+		
+		ReservationEntity foundReservation = reservationRepository.findBySessionId(sessionId);
+		
+		if(foundReservation == null)
+			throw new ReservationNotFoundException("Reservation deleted due to expired Payment time");
+		
+		if(status.equals("Success"))
+			foundReservation.setStatus("Booked"); 
+		else 
+			foundReservation.setStatus("Failed");
+		
+		reservationRepository.save(foundReservation);
+		
+		return new ResponseEntity<>("updates made successfully", HttpStatus.OK);
+		
+		
+	}
+	
 	public ResponseEntity<List<RoomDto>> filter(String checkInDate, String checkOutDate, String roomType) throws Exception{
-		return proxy.filter(checkInDate, checkOutDate, roomType);
+		// getting all rooms from room service of type roomType
+		Set<RoomDto> roomDtos = proxy.filter(roomType).getBody().stream().collect(Collectors.toSet());
+		Set<Long> rooms = roomDtos.stream().map(room -> room.getRoomNumber()).collect(Collectors.toSet());
+				
+		//getting all notAvailable rooms 
+		Set<Long> notAvailable = notAvailable(checkInDate, checkOutDate, roomType);
+				
+		// removing the notAvailable rooms from all rooms of given type
+		for(Long i: notAvailable) {
+			if(rooms.contains(i))
+				rooms.remove(i);
+		}
+		
+		List<RoomDto> result = new ArrayList<>();
+		
+		for(RoomDto room : roomDtos) {
+			if(rooms.contains(room.getRoomNumber()))
+					result.add(room);
+		}
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
+		
+	}
+	
+	public HashSet<Long> notAvailable(String checkInDate, String checkOutDate, String roomType) throws Exception{
+		
+		
+		SimpleDateFormat smf = new SimpleDateFormat("dd/MM/yyyy");
+		Date d1 = smf.parse(checkInDate);
+		Date d2 = smf.parse(checkOutDate);
+		
+		List<ReservationEntity> expiredReservations = new ArrayList<>();
+		
+		List<ReservationEntity> notAvailable = reservationRepository.findAll().stream().filter(reservation -> {
+				
+				Date currDate1 = null;
+				Date currDate2 = null;
+				try {
+					currDate1 = smf.parse(reservation.getCheck_inDate());
+					currDate2 = smf.parse(reservation.getCheck_outDate());
+
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				
+				// checking overlapping
+				if((currDate1.before(d2) && currDate2.after(d1)) || currDate1.equals(d1) || currDate2.equals(d1) || currDate1.equals(d2) || currDate2.equals(d2))
+					return true;
+				
+				return false;
+		}).filter(reservation -> reservation.getRoomType().equals(roomType)).filter(reservation->{
+				
+				if(reservation.getStatus().equals("Booked"))
+					return true;
+				if(reservation.getStatus().equals("Pending")) {
+
+					//check the time limit (5 mins for now)
+					if(((new Date().getTime() - reservation.getDate().getTime())/(1000*60)) >= 6) {
+
+						expiredReservations.add(reservation);
+						return false;
+					}
+					
+					return true;
+				}
+				
+				expiredReservations.add(reservation);
+				return false;
+		}).collect(Collectors.toList());
+		
+		HashSet<Long> notAvailableRooms = new HashSet<>();
+		
+		for(ReservationEntity reservation : notAvailable) {
+			for(Long roomNumber: reservation.getRoomNumbers())
+				notAvailableRooms.add(roomNumber);
+			
+		}
+		
+		//handle expired case here **
+		for(ReservationEntity exp: expiredReservations) {
+			reservationRepository.delete(exp);;
+		}
+		
+		
+		return notAvailableRooms;
+		
 	}
 
 }

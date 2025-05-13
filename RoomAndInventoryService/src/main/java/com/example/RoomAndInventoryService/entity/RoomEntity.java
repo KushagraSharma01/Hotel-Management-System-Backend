@@ -27,17 +27,14 @@ public class RoomEntity {
 	
 	private Long roomNumber;
 	
-	private List<Long> guestIds;
-	
-	private HashMap<String, String> dates;
 	private String roomType;
 	
+	private Long price;
 	
-	public RoomEntity(List<Long> guestIds, Long roomNumber, HashMap<String, String> dates, String roomType) {
+	
+	public RoomEntity(Long roomNumber, String roomType,String price) {
 		super();
-		this.guestIds = guestIds;
 		this.roomNumber = roomNumber;
-		this.dates = dates;
 		this.roomType = roomType;
 	}
 	

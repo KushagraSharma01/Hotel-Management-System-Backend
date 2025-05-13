@@ -53,9 +53,9 @@ public class RoomControllerTest {
 		HashMap<String, String> dates = new HashMap<>();
 		dates.put("10/09/2025", "12/09/2025");
 		
-		dummyDto = new RoomDto(1L, 12L, List.of(1L), dates, "AC");
+		dummyDto = new RoomDto(1L, 12L, "AC", 23L);
 		
-		updatedDto = new RoomDto(2L, 24L, List.of(6L), dates, "Non-AC");
+		updatedDto = new RoomDto(2L, 24L, "Non-AC", 23L);
 		
 		Mockito.lenient().when(roomService.create(any(RoomDto.class))).thenReturn(new ResponseEntity<>(dummyDto, HttpStatus.OK));
 		
@@ -65,7 +65,7 @@ public class RoomControllerTest {
 		
 		Mockito.lenient().when(roomService.delete(any(Long.class))).thenReturn(new ResponseEntity<>("Room deleted", HttpStatus.OK));
 		
-		Mockito.lenient().when(roomService.filter(any(String.class), any(String.class), any(String.class))).thenReturn(new ResponseEntity<>(List.of(dummyDto), HttpStatus.OK));
+		Mockito.lenient().when(roomService.filter( any(String.class))).thenReturn(new ResponseEntity<>(List.of(dummyDto), HttpStatus.OK));
 		
 	}
 	
@@ -81,8 +81,7 @@ public class RoomControllerTest {
 		   .andExpect(status().isOk())
 		   .andExpect(jsonPath("$.id").value(dummyDto.getId()))
 		   .andExpect(jsonPath("$.roomNumber").value(dummyDto.getRoomNumber()))
-		   .andExpect(jsonPath("$.guestIds").value(1))
-		   .andExpect(jsonPath("$.dates").value(dummyDto.getDates()))
+		   .andExpect(jsonPath("$.price").value(dummyDto.getPrice()))
 		   .andExpect(jsonPath("$.roomType").value(dummyDto.getRoomType()));
 		
 	}
@@ -95,8 +94,7 @@ public class RoomControllerTest {
 		   .andExpect(status().isOk())
 		   .andExpect(jsonPath("$[0].id").value(dummyDto.getId()))
 		   .andExpect(jsonPath("$[0].roomNumber").value(dummyDto.getRoomNumber()))
-		   .andExpect(jsonPath("$[0].guestIds").value(1))
-		   .andExpect(jsonPath("$[0].dates").value(dummyDto.getDates()))
+		   .andExpect(jsonPath("$[0].price").value(dummyDto.getPrice()))
 		   .andExpect(jsonPath("$[0].roomType").value(dummyDto.getRoomType()));
 		
 	}
@@ -113,8 +111,7 @@ public class RoomControllerTest {
 		   .andExpect(status().isOk())
 		   .andExpect(jsonPath("$.id").value(updatedDto.getId()))
 		   .andExpect(jsonPath("$.roomNumber").value(updatedDto.getRoomNumber()))
-		   .andExpect(jsonPath("$.guestIds").value(6))
-		   .andExpect(jsonPath("$.dates").value(updatedDto.getDates()))
+		   .andExpect(jsonPath("$.price").value(updatedDto.getPrice()))
 		   .andExpect(jsonPath("$.roomType").value(updatedDto.getRoomType()));
 		
 	}
@@ -137,8 +134,7 @@ public class RoomControllerTest {
 		   .andExpect(status().isOk())
 		   .andExpect(jsonPath("$[0].id").value(dummyDto.getId()))
 		   .andExpect(jsonPath("$[0].roomNumber").value(dummyDto.getRoomNumber()))
-		   .andExpect(jsonPath("$[0].guestIds").value(1))
-		   .andExpect(jsonPath("$[0].dates").value(dummyDto.getDates()))
+		   .andExpect(jsonPath("$[0].price").value(dummyDto.getPrice()))
 		   .andExpect(jsonPath("$[0].roomType").value(dummyDto.getRoomType()));
 	
 		

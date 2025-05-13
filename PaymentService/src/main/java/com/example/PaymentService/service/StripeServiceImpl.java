@@ -1,4 +1,6 @@
-package com.example.PaymentService.dto.service;
+package com.example.PaymentService.service;
+
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,7 +13,7 @@ import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 
 @Service
-public class StripeService {
+public class StripeServiceImpl implements StripeService{
 
 	//stripe - API
 	//-> productName, amount, quantity, currency
@@ -20,10 +22,12 @@ public class StripeService {
 	@Value("${stripe.secretKey}")
 	private String secretKey;
 	
-	public StripeResponse checkoutProducts(ProductRequest productRequest) {
+	public StripeResponse checkoutProducts(ProductRequest productRequest, Long paymentId) {
 		
 		//here using the secret key
 		Stripe.apiKey = secretKey;
+		
+		String id = paymentId.toString();
 		
 		//setting the name of the product data
 		SessionCreateParams.LineItem.PriceData.ProductData productDate = SessionCreateParams.LineItem.PriceData.ProductData.builder()
@@ -45,9 +49,10 @@ public class StripeService {
 		//setting the values of SessionCreateParams
 		SessionCreateParams params = SessionCreateParams.builder()
 						   .setMode(SessionCreateParams.Mode.PAYMENT)
-						   .setSuccessUrl("http://localhost:8080/product/v1/success")
-						   .setCancelUrl("http://localhost:8080/product/v1/cancel")
+						   .setSuccessUrl("http://localhost:8087/payments/success/"+id)
+						   .setCancelUrl("http://localhost:8087/payments/cancel/"+id)
 						   .addLineItem(lineItem)
+						   .setExpiresAt((new Date().getTime()+1000*30*60)/1000)
 						   .build();
 		
 		//creating the checkout session

@@ -8,4 +8,6 @@ import com.example.ReservationMicroservice.entity.ReservationEntity;
 @Repository
 public interface ReservationRepository extends JpaRepository<ReservationEntity, Long>{
 
+	ReservationEntity findBySessionId(String sessionId);
+	
 }

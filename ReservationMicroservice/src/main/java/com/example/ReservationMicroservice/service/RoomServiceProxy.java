@@ -20,9 +20,7 @@ import com.example.ReservationMicroservice.dto.RoomDto;
 public interface RoomServiceProxy {
 	
 	@GetMapping("/rooms/filter")
-	public ResponseEntity<List<RoomDto>> filter(@RequestParam String checkInDate, @RequestParam String checkOutDate, @RequestParam String roomType);
+	public ResponseEntity<List<RoomDto>> filter(@RequestParam String roomType);
 
-	@PostMapping("/rooms/bookRooms")
-	public ResponseEntity<List<RoomDto>> book(@RequestBody BookingDto bookDto);
 	
 }

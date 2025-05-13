@@ -17,9 +17,9 @@ public interface RoomService {
 	
 	public ResponseEntity<String> delete(Long id) throws Exception;
 	
-	public ResponseEntity<List<RoomDto>> filter(String checkInDate, String checkOutDate, String roomType) throws Exception;
+	public ResponseEntity<List<RoomDto>> filter(String roomType) throws Exception;
 	
-	public ResponseEntity<List<RoomDto>> bookRooms(BookingDto bookDto) throws Exception;
+	
 
 }
 

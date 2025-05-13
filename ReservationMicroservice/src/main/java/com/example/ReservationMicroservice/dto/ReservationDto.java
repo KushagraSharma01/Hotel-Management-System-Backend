@@ -45,8 +45,11 @@ public class ReservationDto {
 	@NotNull(message = "room Numbers cannot be null")
 	private List<Long> roomNumbers;
 	
+	private String sessionId;
 	
+	private String status;
 	
+	private Date date;
 	
 
 	public void setCheck_inDate(String check_inDate) throws Exception {

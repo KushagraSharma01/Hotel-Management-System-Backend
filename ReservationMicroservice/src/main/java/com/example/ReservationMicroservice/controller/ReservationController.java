@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ReservationMicroservice.dto.ReservationDto;
 import com.example.ReservationMicroservice.dto.RoomDto;
+import com.example.ReservationMicroservice.dto.StripeResponse;
 import com.example.ReservationMicroservice.service.ReservationService;
 import com.example.ReservationMicroservice.service.RoomServiceProxy;
 
@@ -49,7 +50,7 @@ public class ReservationController {
 
 	@CircuitBreaker(name = "Create", fallbackMethod = "fallbackMethod")
 	@PostMapping("/create/{id}")
-	public ResponseEntity<ReservationDto> create(@Valid @PathVariable Long id, @Valid @RequestBody ReservationDto inDto) throws Exception{
+	public ResponseEntity<StripeResponse> create(@Valid @PathVariable Long id, @Valid @RequestBody ReservationDto inDto) throws Exception{
 		
 		inDto.setGuestId(id);
 		
@@ -75,6 +76,11 @@ public class ReservationController {
 	@GetMapping("/filter")
 	public ResponseEntity<List<RoomDto>> getRooms(@RequestParam String checkInDate, @RequestParam String checkOutDate, @RequestParam String roomType) throws Exception{
 		return reservationService.filter(checkInDate, checkOutDate, roomType);
+	}
+	
+	@PostMapping("/confirm/{sessionId}/{status}")
+	public ResponseEntity<String> confirm(@PathVariable String sessionId,@PathVariable String status) throws Exception{
+		return reservationService.confirm(sessionId, status);
 	}
 	
 	

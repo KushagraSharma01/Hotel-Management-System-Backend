@@ -60,9 +60,9 @@ public class RoomServiceImpl implements RoomService{
 		
 		RoomEntity foundRoom = roomRepository.findById(id).orElseThrow(()-> new RoomNotFoundException("No room was found with the given id"));
 		
-		foundRoom.setDates(updatedRoom.getDates());
 		foundRoom.setRoomType(updatedRoom.getRoomType());
 		foundRoom.setRoomNumber(updatedRoom.getRoomNumber());
+		foundRoom.setPrice(updatedRoom.getPrice());
 		
 		foundRoom = roomRepository.save(foundRoom);
 		
@@ -81,70 +81,17 @@ public class RoomServiceImpl implements RoomService{
 		
 	}
 	
-	public ResponseEntity<List<RoomDto>> filter(String checkInDate, String checkOutDate, String roomType) throws Exception{
+	public ResponseEntity<List<RoomDto>> filter(String roomType) throws Exception{
 		
-		SimpleDateFormat smf = new SimpleDateFormat("dd/MM/yyyy");
 		
-		List<RoomDto> l1 =  roomRepository.findAll().stream().filter(room ->{
-			
-				boolean isAvail = false;
-				
-				if(room.getDates().containsKey(checkInDate) || room.getDates().containsKey(checkOutDate))
-					return false;
-				
-				try {
-					Date dt1 = smf.parse(checkInDate);
-					Date dt2 = smf.parse(checkOutDate);
-					
-					for(String inDate: room.getDates().keySet()) {
-						if(smf.parse(inDate).before(dt1)&&smf.parse(room.getDates().get(inDate)).after(dt1))
-							return false;
-						if(smf.parse(inDate).before(dt2)&&smf.parse(room.getDates().get(inDate)).after(dt2))
-							return false;
-					}
-				}
-				catch(Exception e) {
-					System.out.println(e.getMessage());
-				}
-				
-				return true;
-		}).filter(room -> room.getRoomType().equals(roomType)).map(room -> mapper.map(room, RoomDto.class)).collect(Collectors.toList());
+		List<RoomDto> l1 =  roomRepository.findAll().stream().filter(room -> room.getRoomType().equals(roomType)).map(room -> mapper.map(room, RoomDto.class)).collect(Collectors.toList());
 		
 		
 		return new ResponseEntity<>(l1, HttpStatus.OK);
 		
 	}
+
 	
-	public ResponseEntity<List<RoomDto>> bookRooms(BookingDto bookDto) throws Exception{
-		
-		
-		
-		//updating the saving status of the rooms in the repository
-		roomRepository.findAll().stream().filter(room -> {
-			for(Long num: bookDto.getRoomNumbers()) {
-				if(num.equals(room.getRoomNumber()))
-					return true;
-			}
-			return false;
-		}).forEach(room -> {
-			room.getDates().put(bookDto.getCheckInDate(), bookDto.getCheckOutDate());
-			if(!room.getGuestIds().contains(bookDto.getGuestId()))
-				room.getGuestIds().add(bookDto.getGuestId());
-			roomRepository.save(room);
-		});
-		
-		List<RoomDto> l1 = roomRepository.findAll().stream().filter(room -> {
-			for(Long num: bookDto.getRoomNumbers()) {
-				if(num.equals(room.getRoomNumber()))
-					return true;
-			}
-			return false;
-		}).map(room -> mapper.map(room, RoomDto.class)).collect(Collectors.toList());
-		
-		if(l1.isEmpty())
-			throw new RoomNotFoundException("No rooms were Booked");
-		
-		return new ResponseEntity<>(l1, HttpStatus.OK);
-	}
+	
 	
 }

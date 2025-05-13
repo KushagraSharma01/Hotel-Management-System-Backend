@@ -46,18 +46,18 @@ public class RoomServiceTest {
 		HashMap<String, String> dates = new HashMap<>();
 		dates.put("10/09/2025", "12/09/2025");
 		
-		dummyDto = new RoomDto(1L, 12L, List.of(1L), dates, "AC");
+		dummyDto = new RoomDto(1L, 12L, "AC", 23L);
 		
-		updatedDto = new RoomDto(2L, 24L, List.of(6L), dates, "Non-AC");
+		updatedDto = new RoomDto(2L, 24L, "Non-AC", 23L);
 		
-		Mockito.lenient().when(roomRepository.findAll()).thenReturn(List.of(new RoomEntity(1L, 12L, List.of(1L), dates, "AC")));
+		Mockito.lenient().when(roomRepository.findAll()).thenReturn(List.of(new RoomEntity(1L, 12L, "AC", 23L)));
 		
-		Mockito.lenient().when(roomRepository.save(any(RoomEntity.class))).thenReturn(new RoomEntity(1L, 12L, List.of(1L), dates, "AC"));
+		Mockito.lenient().when(roomRepository.save(any(RoomEntity.class))).thenReturn(new RoomEntity(1L, 12L, "AC", 23L));
 		
-		Mockito.lenient().when(roomRepository.findById(any(Long.class))).thenReturn(Optional.of(new RoomEntity(1L, 12L, List.of(1L), dates, "AC")));
+		Mockito.lenient().when(roomRepository.findById(any(Long.class))).thenReturn(Optional.of(new RoomEntity(1L, 12L, "AC", 23L)));
 		
 		
-		Mockito.lenient().when(mapper.map(any(RoomDto.class), eq(RoomEntity.class))).thenReturn(new RoomEntity(1L, 12L, List.of(1L), dates, "AC"));
+		Mockito.lenient().when(mapper.map(any(RoomDto.class), eq(RoomEntity.class))).thenReturn(new RoomEntity(1L, 12L, "AC", 23L));
 		Mockito.lenient().when(mapper.map(any(RoomEntity.class), eq(RoomDto.class))).thenReturn(dummyDto);
 		
 		
@@ -71,8 +71,7 @@ public class RoomServiceTest {
 		
 		
 		assertAll(()->assertTrue(dummyDto.getId().equals(resDto.getId())),
-				  ()->assertTrue(dummyDto.getDates().equals(resDto.getDates())),
-				  ()->assertTrue(dummyDto.getGuestIds().get(0).equals(resDto.getGuestIds().get(0))),
+				  ()->assertTrue(dummyDto.getPrice().equals(resDto.getPrice())),
 				  ()->assertTrue(dummyDto.getRoomNumber().equals(resDto.getRoomNumber())),
 				  ()->assertTrue(dummyDto.getRoomType().equals(resDto.getRoomType())));
 		
@@ -85,8 +84,7 @@ public class RoomServiceTest {
 		RoomDto resDto = roomService.getAll().getBody().get(0);
 		
 		assertAll(()->assertTrue(dummyDto.getId().equals(resDto.getId())),
-				  ()->assertTrue(dummyDto.getDates().equals(resDto.getDates())),
-				  ()->assertTrue(dummyDto.getGuestIds().get(0).equals(resDto.getGuestIds().get(0))),
+				  ()->assertTrue(dummyDto.getPrice().equals(resDto.getPrice())),
 				  ()->assertTrue(dummyDto.getRoomNumber().equals(resDto.getRoomNumber())),
 				  ()->assertTrue(dummyDto.getRoomType().equals(resDto.getRoomType())));
 		
@@ -96,17 +94,16 @@ public class RoomServiceTest {
 	@DisplayName("Edit Test")
 	void editTest() throws Exception{
 		
-		Mockito.lenient().when(roomRepository.findById(any(Long.class))).thenReturn(Optional.of(new RoomEntity(2L, 24L, List.of(6L), new HashMap<>(), "Non-AC")));
+		Mockito.lenient().when(roomRepository.findById(any(Long.class))).thenReturn(Optional.of(new RoomEntity(2L, 24L, "Non-AC", 23L)));
 		
-		Mockito.lenient().when(roomRepository.save(any(RoomEntity.class))).thenReturn(new RoomEntity(2L, 24L, List.of(6L), new HashMap<>(), "Non-AC"));
+		Mockito.lenient().when(roomRepository.save(any(RoomEntity.class))).thenReturn(new RoomEntity(2L, 24L, "Non-AC", 23L));
 		
 		Mockito.lenient().when(mapper.map(any(RoomEntity.class), eq(RoomDto.class))).thenReturn(updatedDto);
 		
 		RoomDto resDto = roomService.edit(1L, updatedDto).getBody();
 		
 		assertAll(()->assertTrue(updatedDto.getId().equals(resDto.getId())),
-				  ()->assertTrue(updatedDto.getDates().equals(resDto.getDates())),
-				  ()->assertTrue(updatedDto.getGuestIds().get(0).equals(resDto.getGuestIds().get(0))),
+				  ()->assertTrue(updatedDto.getPrice().equals(resDto.getPrice())),
 				  ()->assertTrue(updatedDto.getRoomNumber().equals(resDto.getRoomNumber())),
 				  ()->assertTrue(updatedDto.getRoomType().equals(resDto.getRoomType())));
 			
@@ -126,11 +123,10 @@ public class RoomServiceTest {
 	@DisplayName("Filter Test")
 	void filterTest() throws Exception{
 		
-		RoomDto resDto = roomService.filter("13/09/2025", "15/09/2025", "AC").getBody().get(0);
+		RoomDto resDto = roomService.filter("AC").getBody().get(0);
 		
 		assertAll(()->assertTrue(dummyDto.getId().equals(resDto.getId())),
-				  ()->assertTrue(dummyDto.getDates().equals(resDto.getDates())),
-				  ()->assertTrue(dummyDto.getGuestIds().get(0).equals(resDto.getGuestIds().get(0))),
+				  ()->assertTrue(dummyDto.getPrice().equals(resDto.getPrice())),
 				  ()->assertTrue(dummyDto.getRoomNumber().equals(resDto.getRoomNumber())),
 				  ()->assertTrue(dummyDto.getRoomType().equals(resDto.getRoomType())));
 		

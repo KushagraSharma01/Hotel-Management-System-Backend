@@ -28,8 +28,8 @@ public class UserServiceImpl implements UserService{
 	public ResponseEntity<UserDto> register(UserDto user, Role role) throws Exception{
 		
 		//check for already present user
-		if(userRepository.findByEmail(user.getEmail()) != null)
-			throw new UserAlreadyPresentException("User already registered with the given email");
+		if(userRepository.findByEmailAndRole(user.getEmail(), role) != null)
+			throw new UserAlreadyPresentException("User already registered with the given email and role");
 		
 		UserEntity newUser = new UserEntity(user.getFirstName(), user.getLastName(), user.getEmail(), encoder.encode(user.getPassword()));
 		

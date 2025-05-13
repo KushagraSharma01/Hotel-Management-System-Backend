@@ -25,7 +25,7 @@ import jakarta.validation.Valid;
 public class RoomController {
 	
 	@Autowired
-	private RoomService roomService;
+	private RoomService roomService; 
 	
 	@GetMapping("/getAll")
 	public ResponseEntity<List<RoomDto>> getAll() throws Exception{
@@ -48,13 +48,9 @@ public class RoomController {
 	}
 	
 	@GetMapping("/filter")
-	public ResponseEntity<List<RoomDto>> filter(@RequestParam String checkInDate, @RequestParam String checkOutDate, @RequestParam String roomType)throws Exception{
-		return roomService.filter(checkInDate, checkOutDate, roomType);
+	public ResponseEntity<List<RoomDto>> filter(@RequestParam String roomType)throws Exception{
+		return roomService.filter(roomType);
 	}
-	
-	@PostMapping("/bookRooms")
-	public ResponseEntity<List<RoomDto>> book(@Valid @RequestBody BookingDto bookDto) throws Exception{
-		return roomService.bookRooms(bookDto);
-	}
+
 
 }

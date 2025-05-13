@@ -1,5 +1,6 @@
 package com.example.ReservationMicroservice.entity;
 
+import java.util.Date;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -34,6 +35,11 @@ public class ReservationEntity {
 	private String check_outDate;
 	private String roomType;
 	private List<Long> roomNumbers;
+	
+	private String sessionId;
+	private String status;
+	private Date date;
+	
 	
 	
 	
