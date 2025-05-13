@@ -13,11 +13,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "payments")
 @Data
 @AllArgsConstructor
-<<<<<<< HEAD
 @NoArgsConstructor 
-=======
-@NoArgsConstructor
->>>>>>> 7cd6b6941e801dc5b2cf4da7f8f3de81aaa09964
 public class PaymentEntity {
 	
 	@Id
