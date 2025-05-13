@@ -20,7 +20,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomEntity {
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 7cd6b6941e801dc5b2cf4da7f8f3de81aaa09964
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;

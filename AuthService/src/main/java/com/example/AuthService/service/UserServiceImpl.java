@@ -55,6 +55,7 @@ public class UserServiceImpl implements UserService{
 		String token = jwtService.generateToken(foundUser);
 		
 		return new ResponseEntity<>(token, HttpStatus.OK);
+
 		
 	}
 

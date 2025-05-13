@@ -41,7 +41,10 @@ public class JwtFilter implements WebFilter, Ordered{
 		String jwt;
 		String userEmail;
 		System.out.println("here in filter");
+<<<<<<< HEAD
 		System.out.println(authHeader);
+=======
+>>>>>>> 7cd6b6941e801dc5b2cf4da7f8f3de81aaa09964
 		
 		if(authHeader == null || !authHeader.startsWith("Bearer")) {
 			System.out.println("No Auth Header");

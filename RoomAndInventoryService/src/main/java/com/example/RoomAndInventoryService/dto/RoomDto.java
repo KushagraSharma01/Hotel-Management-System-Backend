@@ -16,7 +16,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomDto {
+<<<<<<< HEAD
 	 
+=======
+	
+>>>>>>> 7cd6b6941e801dc5b2cf4da7f8f3de81aaa09964
 	private Long id;
 	
 	@NotNull(message = "roomNumber cannot be null")

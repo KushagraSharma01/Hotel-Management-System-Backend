@@ -14,7 +14,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GuestDto {
 
+<<<<<<< HEAD
 	private Long id; 
+=======
+	private Long id;
+>>>>>>> 7cd6b6941e801dc5b2cf4da7f8f3de81aaa09964
 
 	@NotNull(message = "memberCode cannot be null")
 	private String memberCode;

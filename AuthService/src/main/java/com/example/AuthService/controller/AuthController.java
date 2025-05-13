@@ -50,7 +50,6 @@ public class AuthController {
 		
 	}
 	
-	 
 	@PostMapping("/manager/register/receptionist")
 	public ResponseEntity<UserDto> registerManager(@Valid @RequestBody UserDto user) throws Exception{
 		
