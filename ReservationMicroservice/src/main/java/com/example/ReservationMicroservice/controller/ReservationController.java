@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.ReservationMicroservice.dto.ReservationDto;
 import com.example.ReservationMicroservice.dto.RoomDto;
 import com.example.ReservationMicroservice.dto.StripeResponse;
+import com.example.ReservationMicroservice.exceptions.PaymentServiceDownException;
+import com.example.ReservationMicroservice.exceptions.RoomServiceDownException;
 import com.example.ReservationMicroservice.service.ReservationService;
 import com.example.ReservationMicroservice.service.RoomServiceProxy;
 
@@ -57,9 +59,12 @@ public class ReservationController {
 		return reservationService.create(inDto);
 	}
 	
-	public ResponseEntity<String> fallbackMethod(FeignException e){
+	public ResponseEntity<String> fallbackMethod(Exception e) throws Exception{
 		
-		return new ResponseEntity<>("Room server is down currently. Please try again later", HttpStatus.NOT_FOUND);
+		if(!(e instanceof RoomServiceDownException) && !(e instanceof PaymentServiceDownException))
+			throw e;
+		
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 		
 	}
 	

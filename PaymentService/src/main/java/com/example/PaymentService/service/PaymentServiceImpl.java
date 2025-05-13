@@ -55,51 +55,38 @@ public class PaymentServiceImpl implements PaymentService{
 		if(foundPayment == null)
 			throw new PaymentNotFoundException("No pending payments found with given payment Id");
 		
-		foundPayment.setStatus(status);
-		
-		//saving the success status in db
-		paymentRepository.save(foundPayment);
 		
 		//make a call to reservation service to update the reservation status
-		try {
-			String response = proxy.confirm(foundPayment.getSessionId(), status).getBody();
-		}
-		catch(Exception e) {
+		String response = proxy.confirm(foundPayment.getSessionId(), status).getBody();
+
 			
-			//if the user made payment after the expired time (or the reservaiton service is down for some reason)
-			//then refund will be given
-			if(status.equals("Success"))
-				foundPayment.setStatus("Refund");
-			else
-				foundPayment.setStatus(status);
+		foundPayment.setStatus(status);
 			
-			paymentRepository.save(foundPayment);
-			status = "Gone for refund, Please do not make any further payments";
-			
-		}
+		//saving the success status in db
+		paymentRepository.save(foundPayment);
 		
 		return new ResponseEntity<>(status, HttpStatus.OK);
 		
 	}
 	
-//	public ResponseEntity<String> fallbackMethod(String status, Long id){
-//		
-//		PaymentEntity foundPayment = paymentRepository.findByIdAndStatus(id, "Pending");
-//		
-//		//if the user made payment after the expired time (or the reservaiton service is down for some reason)
-//		//then refund will be given
-//		
-//		if(status.equals("Success"))
-//			foundPayment.setStatus("Refund");
-//		else
-//			foundPayment.setStatus(status);
-//		
-//		paymentRepository.save(foundPayment);
-//		
-//		status = "Gone for refund, Please do not make any further payments";
-//		
-//		return new ResponseEntity<>(status, HttpStatus.NOT_FOUND);
-//	}
+	public ResponseEntity<String> fallbackMethod(String status, Long id){
+		
+		PaymentEntity foundPayment = paymentRepository.findByIdAndStatus(id, "Pending");
+		
+		//if the user made payment after the expired time (or the reservaiton service is down for some reason)
+		//then refund will be given
+		
+		if(status.equals("Success"))
+			foundPayment.setStatus("Refund");
+		else
+			foundPayment.setStatus(status);
+		
+		paymentRepository.save(foundPayment);
+		
+		status = "Gone for refund, Please do not make any further payments";
+		
+		return new ResponseEntity<>(status, HttpStatus.NOT_FOUND);
+	}
 	
 	
 }

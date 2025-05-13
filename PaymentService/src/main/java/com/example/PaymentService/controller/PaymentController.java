@@ -30,6 +30,7 @@ public class PaymentController {
 	}
 
 	@GetMapping("/{confirm}/{id}")
+	@CircuitBreaker(name = "default", fallbackMethod = "fallbackMethod")
 	public ResponseEntity<String> confirm(@PathVariable String confirm, @PathVariable Long id) throws Exception {
 		
 		String statusFound = "";
@@ -43,22 +44,22 @@ public class PaymentController {
 	}
 	
 	
-//	public ResponseEntity<String> fallbackMethod(@PathVariable String confirm, @PathVariable Long id , Exception e) throws Exception{
-//		
+	public ResponseEntity<String> fallbackMethod(@PathVariable String confirm, @PathVariable Long id , Exception e) throws Exception{
+		
 //		System.out.println("Exception is : "+e.getStackTrace());
-//		
-//		if(!(e instanceof FeignException) && !(e instanceof RetryableException) )
-//			throw e;
-//		
-//		String statusFound = "";
-//		
-//		if(confirm.equals("success"))
-//			statusFound = "Success";
-//		else
-//			statusFound = "Failed";
-//		
-//		return paymentService.fallbackMethod(statusFound, id);
-//	}
-//	
+		
+		if(!(e instanceof FeignException) && !(e instanceof RetryableException) )
+			throw e;
+		
+		String statusFound = "";
+		
+		if(confirm.equals("success"))
+			statusFound = "Success";
+		else
+			statusFound = "Failed";
+		
+		return paymentService.fallbackMethod(statusFound, id);
+	}
+	
 
 }

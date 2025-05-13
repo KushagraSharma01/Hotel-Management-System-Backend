@@ -11,6 +11,6 @@ public interface PaymentService {
 	
 	public ResponseEntity<String> confirm(Long id, String status) throws Exception;
 	
-//	public ResponseEntity<String> fallbackMethod(String status, Long id);
+	public ResponseEntity<String> fallbackMethod(String status, Long id);
 	
 }

@@ -21,9 +21,13 @@ import com.example.ReservationMicroservice.dto.ReservationDto;
 import com.example.ReservationMicroservice.dto.RoomDto;
 import com.example.ReservationMicroservice.dto.StripeResponse;
 import com.example.ReservationMicroservice.entity.ReservationEntity;
+import com.example.ReservationMicroservice.exceptions.PaymentServiceDownException;
 import com.example.ReservationMicroservice.exceptions.ReservationNotFoundException;
+import com.example.ReservationMicroservice.exceptions.RoomServiceDownException;
 import com.example.ReservationMicroservice.exceptions.RoomsNotAvailableException;
 import com.example.ReservationMicroservice.repository.ReservationRepository;
+
+import feign.FeignException;
 
 @Service
 public class ReservationServiceImpl implements ReservationService{
@@ -45,8 +49,16 @@ public class ReservationServiceImpl implements ReservationService{
 		ReservationEntity newReservation = mapper.map(inDto, ReservationEntity.class);
 		
 		// getting all rooms from room service of type roomType
+		Set<RoomDto> roomDtos = null;
 		
-		Set<RoomDto> roomDtos = proxy.filter(inDto.getRoomType()).getBody().stream().collect(Collectors.toSet());
+		try {
+			roomDtos = proxy.filter(inDto.getRoomType()).getBody().stream().collect(Collectors.toSet());
+		}
+		catch(FeignException e) {
+			
+			throw new RoomServiceDownException("Room service is down currently, Please try again later");
+			
+		}
 		Set<Long> rooms = roomDtos.stream().map(room -> room.getRoomNumber()).collect(Collectors.toSet());
 		
 		//getting all notAvailable rooms 
@@ -81,7 +93,14 @@ public class ReservationServiceImpl implements ReservationService{
 		ProductRequest newProduct = new ProductRequest(amount*100, 1L, "Make Reservation", "INR");
 		
 		//checking out to payment service
-		StripeResponse response = paymentProxy.checkout(newProduct).getBody();
+		StripeResponse response = null;
+		
+		try {
+			response = paymentProxy.checkout(newProduct).getBody();
+		}
+		catch(FeignException e) {
+			throw new PaymentServiceDownException("Payment service is down currently, Please try again later");	
+		}
 		
 		newReservation.setStatus("Pending");
 		newReservation.setDate(new Date());
