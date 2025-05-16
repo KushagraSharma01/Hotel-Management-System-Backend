@@ -18,13 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.ReservationMicroservice.dto.ReservationDto;
 import com.example.ReservationMicroservice.dto.RoomDto;
 import com.example.ReservationMicroservice.dto.StripeResponse;
-import com.example.ReservationMicroservice.exceptions.PaymentServiceDownException;
-import com.example.ReservationMicroservice.exceptions.RoomServiceDownException;
+import com.example.ReservationMicroservice.exceptions.ServiceDownException;
 import com.example.ReservationMicroservice.service.ReservationService;
-import com.example.ReservationMicroservice.service.RoomServiceProxy;
 
-import feign.FeignException;
-import feign.RetryableException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
 
@@ -54,15 +50,12 @@ public class ReservationController {
 	@PostMapping("/create/{id}")
 	public ResponseEntity<StripeResponse> create(@Valid @PathVariable Long id, @Valid @RequestBody ReservationDto inDto) throws Exception{
 		
-		inDto.setGuestId(id);
+		inDto.setGuestId(id); 
 		
 		return reservationService.create(inDto);
 	}
 	
-	public ResponseEntity<String> fallbackMethod(Exception e) throws Exception{
-		
-		if(!(e instanceof RoomServiceDownException) && !(e instanceof PaymentServiceDownException))
-			throw e;
+	public ResponseEntity<String> fallbackMethod(ServiceDownException e) throws Exception{
 		
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 		

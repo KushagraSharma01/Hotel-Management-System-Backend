@@ -19,11 +19,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReservationDto {
 	
-<<<<<<< HEAD
 	private Long id; 
-=======
-	private Long id;
->>>>>>> 7cd6b6941e801dc5b2cf4da7f8f3de81aaa09964
 	
 	@Min(1)
 	private Long guestId;

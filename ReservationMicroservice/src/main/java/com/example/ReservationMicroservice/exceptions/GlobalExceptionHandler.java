@@ -64,15 +64,8 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 	}
 	
-	@ExceptionHandler(value = PaymentServiceDownException.class)
-	public ResponseEntity<String> paymentServiceDown(PaymentServiceDownException e){
-		
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-		
-	}
-	
-	@ExceptionHandler(value = RoomServiceDownException.class)
-	public ResponseEntity<String> roomServiceDown(RoomServiceDownException e){
+	@ExceptionHandler(value = ServiceDownException.class)
+	public ResponseEntity<String> roomServiceDown(ServiceDownException e){
 		
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 		

@@ -11,11 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StaffDto {
-<<<<<<< HEAD
- 
-=======
-
->>>>>>> 7cd6b6941e801dc5b2cf4da7f8f3de81aaa09964
+	
 	private Long id;
 	
 	@NotNull(message = "code cannot be null")

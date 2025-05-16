@@ -15,15 +15,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.example.ReservationMicroservice.dto.BookingDto;
 import com.example.ReservationMicroservice.dto.ProductRequest;
 import com.example.ReservationMicroservice.dto.ReservationDto;
 import com.example.ReservationMicroservice.dto.RoomDto;
 import com.example.ReservationMicroservice.dto.StripeResponse;
 import com.example.ReservationMicroservice.entity.ReservationEntity;
-import com.example.ReservationMicroservice.exceptions.PaymentServiceDownException;
 import com.example.ReservationMicroservice.exceptions.ReservationNotFoundException;
-import com.example.ReservationMicroservice.exceptions.RoomServiceDownException;
+import com.example.ReservationMicroservice.exceptions.ServiceDownException;
 import com.example.ReservationMicroservice.exceptions.RoomsNotAvailableException;
 import com.example.ReservationMicroservice.repository.ReservationRepository;
 
@@ -56,7 +54,7 @@ public class ReservationServiceImpl implements ReservationService{
 		}
 		catch(FeignException e) {
 			
-			throw new RoomServiceDownException("Room service is down currently, Please try again later");
+			throw new ServiceDownException("Room service is down currently, Please try again later");
 			
 		}
 		Set<Long> rooms = roomDtos.stream().map(room -> room.getRoomNumber()).collect(Collectors.toSet());
@@ -99,7 +97,7 @@ public class ReservationServiceImpl implements ReservationService{
 			response = paymentProxy.checkout(newProduct).getBody();
 		}
 		catch(FeignException e) {
-			throw new PaymentServiceDownException("Payment service is down currently, Please try again later");	
+			throw new ServiceDownException("Payment service is down currently, Please try again later");	
 		}
 		
 		newReservation.setStatus("Pending");

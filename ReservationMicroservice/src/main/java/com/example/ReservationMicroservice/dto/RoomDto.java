@@ -19,11 +19,8 @@ public class RoomDto {
 	
 	
 	private Long id;
-<<<<<<< HEAD
+	
 	private Long roomNumber; 
-=======
-	private Long roomNumber;
->>>>>>> 7cd6b6941e801dc5b2cf4da7f8f3de81aaa09964
 	private String roomType;
 	private Long price;
 	

@@ -8,11 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductRequest {
-<<<<<<< HEAD
- 
-=======
-
->>>>>>> 7cd6b6941e801dc5b2cf4da7f8f3de81aaa09964
+	
 	private Long amount;
 	private Long quantity;
 	private String name;
