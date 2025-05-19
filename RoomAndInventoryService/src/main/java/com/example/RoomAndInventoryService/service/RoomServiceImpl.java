@@ -1,8 +1,5 @@
 package com.example.RoomAndInventoryService.service;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.example.RoomAndInventoryService.dto.BookingDto;
 import com.example.RoomAndInventoryService.dto.RoomDto;
 import com.example.RoomAndInventoryService.entity.RoomEntity;
 import com.example.RoomAndInventoryService.exceptions.RoomAlreadyPresentException;

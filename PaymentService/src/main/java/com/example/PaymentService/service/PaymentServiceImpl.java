@@ -6,13 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.PaymentService.dto.ProductRequest;
+import com.example.PaymentService.dto.Receipt;
 import com.example.PaymentService.dto.StripeResponse;
 import com.example.PaymentService.entity.PaymentEntity;
 import com.example.PaymentService.exceptions.PaymentNotFoundException;
 import com.example.PaymentService.repository.PaymentRepository;
-
-import feign.FeignException;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 @Service
 public class PaymentServiceImpl implements PaymentService{
@@ -48,7 +46,7 @@ public class PaymentServiceImpl implements PaymentService{
 		
 	} 
 	
-	public ResponseEntity<String> confirm(Long id, String status) throws Exception{
+	public ResponseEntity<Receipt> confirm(Long id, String status) throws Exception{
 		
 		PaymentEntity foundPayment = paymentRepository.findByIdAndStatus(id, "Pending");
 		
@@ -56,8 +54,8 @@ public class PaymentServiceImpl implements PaymentService{
 			throw new PaymentNotFoundException("No pending payments found with given payment Id");
 		
 		
-		//make a call to reservation service to update the reservation status
-		String response = proxy.confirm(foundPayment.getSessionId(), status).getBody();
+		//make a call to reservation service to update the reservation status and getting a part of receipt
+		Receipt response = proxy.confirm(foundPayment.getSessionId(), status).getBody();
 
 			
 		foundPayment.setStatus(status);
@@ -65,7 +63,9 @@ public class PaymentServiceImpl implements PaymentService{
 		//saving the success status in db
 		paymentRepository.save(foundPayment);
 		
-		return new ResponseEntity<>(status, HttpStatus.OK);
+		//sending the complete receipt to the user
+		response.setAmount(foundPayment.getAmount());
+		return new ResponseEntity<>(response, HttpStatus.OK);
 		
 	}
 	

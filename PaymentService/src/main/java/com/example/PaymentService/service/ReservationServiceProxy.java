@@ -5,10 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.example.PaymentService.dto.Receipt;
+
 @FeignClient(name = "ReservationMicroservice")
 public interface ReservationServiceProxy {
 	
 	@PostMapping("/reservations/confirm/{sessionId}/{status}")
-	public ResponseEntity<String> confirm(@PathVariable String sessionId,@PathVariable String status) throws Exception;
+	public ResponseEntity<Receipt> confirm(@PathVariable String sessionId,@PathVariable String status) throws Exception;
 
 }

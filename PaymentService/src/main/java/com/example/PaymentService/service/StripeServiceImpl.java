@@ -36,7 +36,7 @@ public class StripeServiceImpl implements StripeService{
 		//setting the values of the price data
 		SessionCreateParams.LineItem.PriceData priceDate = SessionCreateParams.LineItem.PriceData.builder()
 						   .setCurrency(productRequest.getCurrency() == null ?"INR":productRequest.getCurrency())
-						   .setUnitAmount(productRequest.getAmount())
+						   .setUnitAmount(productRequest.getAmount()*100)
 						   .setProductData(productDate)
 						   .build();
 						   

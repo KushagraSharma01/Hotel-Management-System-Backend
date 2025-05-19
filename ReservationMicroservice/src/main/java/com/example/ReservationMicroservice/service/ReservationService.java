@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
+import com.example.ReservationMicroservice.dto.Receipt;
 import com.example.ReservationMicroservice.dto.ReservationDto;
 import com.example.ReservationMicroservice.dto.RoomDto;
 import com.example.ReservationMicroservice.dto.StripeResponse;
@@ -24,5 +25,5 @@ public interface ReservationService {
 	
 	public ResponseEntity<List<RoomDto>> filter(String checkInDate, String checkOutDate, String roomType) throws Exception;
 	
-	public ResponseEntity<String> confirm(String sessionId, String status) throws Exception;
+	public ResponseEntity<Receipt> confirm(String sessionId, String status) throws Exception;
 }

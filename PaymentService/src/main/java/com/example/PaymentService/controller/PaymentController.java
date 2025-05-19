@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.PaymentService.dto.ProductRequest;
+import com.example.PaymentService.dto.Receipt;
 import com.example.PaymentService.dto.StripeResponse;
 import com.example.PaymentService.service.PaymentService;
 
@@ -31,7 +32,7 @@ public class PaymentController {
 
 	@GetMapping("/{confirm}/{id}")
 	@CircuitBreaker(name = "default", fallbackMethod = "fallbackMethod")
-	public ResponseEntity<String> confirm(@PathVariable String confirm, @PathVariable Long id) throws Exception {
+	public ResponseEntity<Receipt> confirm(@PathVariable String confirm, @PathVariable Long id) throws Exception {
 		
 		String statusFound = "";
 		

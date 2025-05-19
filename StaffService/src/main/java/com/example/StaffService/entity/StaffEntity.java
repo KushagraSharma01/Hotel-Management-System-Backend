@@ -1,6 +1,5 @@
 package com.example.StaffService.entity;
 
-import org.springframework.stereotype.Service;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

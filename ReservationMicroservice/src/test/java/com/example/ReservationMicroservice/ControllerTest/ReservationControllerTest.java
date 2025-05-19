@@ -1,6 +1,7 @@
 package com.example.ReservationMicroservice.ControllerTest;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.ReservationMicroservice.controller.ReservationController;
 import com.example.ReservationMicroservice.dto.ReservationDto;
+import com.example.ReservationMicroservice.dto.StripeResponse;
 import com.example.ReservationMicroservice.service.ReservationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,7 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @WebMvcTest(ReservationController.class)
-@ExtendWith(MockitoExtension.class)
 public class ReservationControllerTest {
 
 	@Autowired
@@ -46,12 +47,15 @@ public class ReservationControllerTest {
 	
 	private ReservationDto reqDto;
 	private String request;
+	private StripeResponse response;
 	
 	@BeforeEach
 	public void setup() throws Exception{
 		
-		reqDto = new ReservationDto(1L, 2L, "ABC123", 12L, 20L, "09/12/2025", "11/12/2025", "AC", new ArrayList<>());
+		reqDto = new ReservationDto(1L, 2L, "ABC123", 12L, 20L, "09/12/2025", "11/12/2025", "AC", new ArrayList<>(), "ABC", "Success", new Date());
 		request = objectMapper.writeValueAsString(reqDto);
+		
+		response = new StripeResponse("Success", "Payment Pending", "ABCID", "SessionUrl");
 		
 	}
 	
@@ -59,20 +63,17 @@ public class ReservationControllerTest {
 	@DisplayName("Create Route Test")
 	public void createRouteTest() throws Exception{
 		
-		Mockito.when(reservationService.create(any(ReservationDto.class))).thenReturn(new ResponseEntity<>(reqDto, HttpStatus.OK));
+		Mockito.when(reservationService.create(any(ReservationDto.class))).thenReturn(new ResponseEntity<>(response, HttpStatus.OK));
 		
 		mvc.perform(post("/reservations/create/1")
 					.content(request)
 					.contentType(MediaType.APPLICATION_JSON)
 					)
 		   .andExpect(status().isOk())
-		   .andExpect(jsonPath("$.id").value(reqDto.getId()))
-		   .andExpect(jsonPath("$.guestId").value(reqDto.getGuestId()))
-		   .andExpect(jsonPath("$.numberOfChildren").value(reqDto.getNumberOfChildren()))
-		   .andExpect(jsonPath("$.numberofAdults").value(reqDto.getNumberofAdults()))
-		   .andExpect(jsonPath("$.check_inDate").value(reqDto.getCheck_inDate()))
-		   .andExpect(jsonPath("$.check_outDate").value(reqDto.getCheck_outDate()))
-		   .andExpect(jsonPath("$.roomType").value(reqDto.getRoomType()));
+		   .andExpect(jsonPath("$.status").value("Success"))
+		   .andExpect(jsonPath("$.message").value("Payment Pending"))
+		   .andExpect(jsonPath("$.sessionId").value("ABCID"))
+		   .andExpect(jsonPath("$.sessionUrl").value("SessionUrl"));
 		
 		
 	}
@@ -99,7 +100,7 @@ public class ReservationControllerTest {
 	@DisplayName("Edit Test")
 	public void editTest() throws Exception{
 		
-		ReservationDto updatedDto = new ReservationDto(3L, 4L, "HGS435", 12L, 20L, "09/12/2025", "11/12/2025", "Non-AC", new ArrayList<>());
+		ReservationDto updatedDto = new ReservationDto(3L, 4L, "HGS435", 12L, 20L, "09/12/2025", "11/12/2025", "Non-AC", new ArrayList<>(),"BCD", "Fail", new Date());
 		
 		String request2 = objectMapper.writeValueAsString(updatedDto);
 		

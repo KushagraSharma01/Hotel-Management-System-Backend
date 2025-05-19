@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.ReservationMicroservice.dto.Receipt;
 import com.example.ReservationMicroservice.dto.ReservationDto;
 import com.example.ReservationMicroservice.dto.RoomDto;
 import com.example.ReservationMicroservice.dto.StripeResponse;
@@ -77,7 +78,7 @@ public class ReservationController {
 	}
 	
 	@PostMapping("/confirm/{sessionId}/{status}")
-	public ResponseEntity<String> confirm(@PathVariable String sessionId,@PathVariable String status) throws Exception{
+	public ResponseEntity<Receipt> confirm(@PathVariable String sessionId,@PathVariable String status) throws Exception{
 		return reservationService.confirm(sessionId, status);
 	}
 	

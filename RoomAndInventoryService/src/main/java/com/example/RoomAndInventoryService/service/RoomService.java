@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.example.RoomAndInventoryService.dto.BookingDto;
 import com.example.RoomAndInventoryService.dto.RoomDto;
 
 public interface RoomService {

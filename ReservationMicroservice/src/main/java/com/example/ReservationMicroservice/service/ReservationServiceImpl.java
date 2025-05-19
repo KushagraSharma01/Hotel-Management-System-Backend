@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.ReservationMicroservice.dto.ProductRequest;
+import com.example.ReservationMicroservice.dto.Receipt;
 import com.example.ReservationMicroservice.dto.ReservationDto;
 import com.example.ReservationMicroservice.dto.RoomDto;
 import com.example.ReservationMicroservice.dto.StripeResponse;
@@ -68,6 +69,7 @@ public class ReservationServiceImpl implements ReservationService{
 				rooms.remove(i);
 		}
 		
+		//checking if the rooms to book are in available to be booked or not
 		boolean available = true; 
 		
 		for(Long i: inDto.getRoomNumbers()) {
@@ -80,7 +82,11 @@ public class ReservationServiceImpl implements ReservationService{
 		if(!available || rooms.isEmpty())
 			throw new RoomsNotAvailableException("Rooms not available for reservation");
 		
-		//calculating total amount
+		//resetting the room set to include only the room numbers user want to book
+		rooms.clear();
+		rooms.addAll(inDto.getRoomNumbers());
+		
+		//calculating total amount of the rooms selected by the user(and not all the rooms which are available)
 		Long amount = 0L;
 		for(RoomDto room: roomDtos) {
 			if(rooms.contains(room.getRoomNumber()))
@@ -88,11 +94,11 @@ public class ReservationServiceImpl implements ReservationService{
 		}
 		
 		//creating a ProductRequest to send to payment service
-		ProductRequest newProduct = new ProductRequest(amount*100, 1L, "Make Reservation", "INR");
+		ProductRequest newProduct = new ProductRequest(amount, 1L, "Make Reservation", "INR");
 		
 		//checking out to payment service
 		StripeResponse response = null;
-		
+				
 		try {
 			response = paymentProxy.checkout(newProduct).getBody();
 		}
@@ -105,8 +111,6 @@ public class ReservationServiceImpl implements ReservationService{
 		newReservation.setSessionId(response.getSessionId());
 		
 		newReservation = reservationRepository.save(newReservation);
-		
-		ReservationDto resDto =  mapper.map(newReservation, ReservationDto.class);
 		
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -177,7 +181,7 @@ public class ReservationServiceImpl implements ReservationService{
 		
 	}
 	
-	public ResponseEntity<String> confirm(String sessionId, String status) throws Exception{
+	public ResponseEntity<Receipt> confirm(String sessionId, String status) throws Exception{
 		
 		ReservationEntity foundReservation = reservationRepository.findBySessionId(sessionId);
 		
@@ -191,7 +195,13 @@ public class ReservationServiceImpl implements ReservationService{
 		
 		reservationRepository.save(foundReservation);
 		
-		return new ResponseEntity<>("updates made successfully", HttpStatus.OK);
+		// sending a part of receipt to the payment service 
+		Receipt newReceipt = new Receipt();
+		newReceipt.setGuestId(foundReservation.getGuestId());
+		newReceipt.setRoomNumbers(foundReservation.getRoomNumbers());
+		newReceipt.setSessionId(sessionId);
+		
+		return new ResponseEntity<>(newReceipt, HttpStatus.OK);
 		
 		
 	}

@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,11 +19,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.example.ReservationMicroservice.dto.ProductRequest;
 import com.example.ReservationMicroservice.dto.ReservationDto;
+import com.example.ReservationMicroservice.dto.RoomDto;
+import com.example.ReservationMicroservice.dto.StripeResponse;
 import com.example.ReservationMicroservice.entity.ReservationEntity;
 import com.example.ReservationMicroservice.repository.ReservationRepository;
+import com.example.ReservationMicroservice.service.PaymentServiceProxy;
 import com.example.ReservationMicroservice.service.ReservationServiceImpl;
 import com.example.ReservationMicroservice.service.RoomServiceProxy;
 
@@ -30,74 +36,80 @@ import com.example.ReservationMicroservice.service.RoomServiceProxy;
 public class ReservationServiceTest {
 
 	@Mock
-	ReservationRepository reservationRepository;
+	private ReservationRepository reservationRepository;
 	
 	@Mock
-	ModelMapper mapper;
+	private ModelMapper mapper;
 	
 	@Mock
-	RoomServiceProxy proxy;
+	private RoomServiceProxy roomProxy;
+	
+	@Mock
+	private PaymentServiceProxy paymentProxy;
 	
 	@InjectMocks
-	ReservationServiceImpl reservationServiceImpl;
+	private ReservationServiceImpl reservationServiceImpl;
 	
-	List<ReservationEntity> dummyReservations;
+	private ReservationDto newReservation;
+	
+	private List<ReservationEntity> dummyReservations;
 	
 	@BeforeEach
-	public void setup() {
+	public void setup() throws Exception {
+		
+		newReservation = new ReservationDto( 1L, 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(7L), "sessionId", "Success", new Date());
 		
 		dummyReservations = new ArrayList<>();
 		
-		dummyReservations.add(new ReservationEntity( 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(2L,3L,4L)) );
+		dummyReservations.add(new ReservationEntity(1L, 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(7L), "sessionId", "Success", new Date()));
 		
 		//mocking findAll method
 		Mockito.lenient().when(reservationRepository.findAll()).thenReturn(dummyReservations);
 		
-		Optional<ReservationEntity> response = Optional.of(new ReservationEntity( 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(2L,3L,4L)));
+		Optional<ReservationEntity> response = Optional.of(new ReservationEntity( 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(7L)));
 		
 		//mocking findById method
 		Mockito.lenient().when(reservationRepository.findById(any(Long.class))).thenReturn(response);
 		
 		//mocking save method
-		Mockito.lenient().when(reservationRepository.save(any(ReservationEntity.class))).thenReturn(new ReservationEntity( 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(2L,3L,4L)));
+		Mockito.lenient().when(reservationRepository.save(any(ReservationEntity.class))).thenReturn(new ReservationEntity( 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(7L)));
 		
 		//mocking mapper
-		Mockito.lenient().when(mapper.map(any(ReservationDto.class), eq(ReservationEntity.class))).thenReturn(new ReservationEntity( 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(2L,3L,4L)));
-		Mockito.lenient().when(mapper.map(any(ReservationEntity.class), eq(ReservationDto.class))).thenReturn(new ReservationDto( 1L, 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(2L,3L,4L)));
+		Mockito.lenient().when(mapper.map(any(ReservationDto.class), eq(ReservationEntity.class))).thenReturn(new ReservationEntity( 1L, 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(7L), "sessionId", "Success", new Date()));
+		Mockito.lenient().when(mapper.map(any(ReservationEntity.class), eq(ReservationDto.class))).thenReturn(new ReservationDto( 1L, 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(7L), "sessionId", "Success", new Date()));
 		
+		//mocking the room service response
+		Mockito.lenient().when(roomProxy.filter(any(String.class))).thenReturn(new ResponseEntity<>(List.of(new RoomDto(1L, 7L, "AC", 24L)), HttpStatus.OK));
+		
+		//mocking the payment service response
+		Mockito.lenient().when(paymentProxy.checkout(any(ProductRequest.class))).thenReturn(new ResponseEntity<>(new StripeResponse("Success", "Payment is Pending", "SessionId", "SessionUrl"), HttpStatus.OK));
 	}
 	
 	@Test
 	@DisplayName("creation Test")
 	void createTest() throws Exception {
-		
-		ReservationDto newReservation = new ReservationDto( 1L, 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(2L,3L,4L));
-		 
+				 
 		// checking
-		ResponseEntity<ReservationDto> response = reservationServiceImpl.create(newReservation);
+		ResponseEntity<StripeResponse> response = reservationServiceImpl.create(newReservation);
 		
-		ReservationDto responseDto = response.getBody();
+		StripeResponse responseDto = response.getBody();
+		
+		System.out.println(responseDto.getMessage()+" "+responseDto.getSessionId()+" "+responseDto.getSessionUrl());
 		
 //		System.out.println(responseDto.getCheck_inDate());
 		System.out.println(newReservation.getCheck_inDate());
 		
-		assertAll(()->assertTrue(newReservation.getCheck_inDate().equals(responseDto.getCheck_inDate())),
-				  ()->assertTrue(newReservation.getCheck_outDate().equals(responseDto.getCheck_outDate())),
-				  ()->assertTrue(newReservation.getCode().equals(responseDto.getCode())),
-				  ()->assertTrue(newReservation.getGuestId().equals(responseDto.getGuestId())),
-				  ()->assertTrue(newReservation.getNumberofAdults().equals(responseDto.getNumberofAdults())),
-		          ()->assertTrue(newReservation.getNumberOfChildren().equals(responseDto.getNumberOfChildren())),
-		          ()->assertTrue(newReservation.getRoomNumbers().equals(responseDto.getRoomNumbers())),
-		          ()->assertTrue(newReservation.getRoomType().equals(responseDto.getRoomType())));
+		assertAll(()->assertTrue(responseDto.getStatus().equals("Success")),
+				  ()->assertTrue(responseDto.getMessage().equals("Payment is Pending")),
+				  ()->assertTrue(responseDto.getSessionId().equals("SessionId")),
+				  ()->assertTrue(responseDto.getSessionUrl().equals("SessionUrl")));
 		
 	}
 	
 	@Test
 	@DisplayName("getById Test")
 	void getByIdTest() throws Exception {
-		
-		ReservationDto newReservation = new ReservationDto( 1L, 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(2L,3L,4L));
-		
+				
 		reservationServiceImpl.create(newReservation);
 		
 		ResponseEntity<ReservationDto> response = reservationServiceImpl.get(1L);
@@ -119,9 +131,7 @@ public class ReservationServiceTest {
 	@Test
 	@DisplayName("getAllForGuest Test")
 	void getAllForGuestTest() throws Exception {
-		
-		ReservationDto newReservation = new ReservationDto( 1L, 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(2L,3L,4L));
-		
+				
 		reservationServiceImpl.create(newReservation);
 		
 		ResponseEntity<List<ReservationDto>> response = reservationServiceImpl.getAllForGuest(2L);
@@ -148,20 +158,18 @@ public class ReservationServiceTest {
 		
 		List<ReservationDto> responseList = response.getBody();
 		
-		ReservationDto present1 = new ReservationDto(1L, 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(2L,3L,4L)) ;
-//		
-		ReservationDto present2 = new ReservationDto(2L, 4L, "ABC456", 2L, 13L, "09/10/2025", "12/10/2025", "Non-AC", List.of(5L,6L,7L));
-		
+		ReservationDto present = new ReservationDto(1L, 2L, "ABC123", 10L, 20L, "09/08/2025", "12/08/2025", "AC", List.of(7L), "sessionId", "Success", new Date()) ;
+//				
 		System.out.println(responseList.size());
 		
 		
-		assertAll(()-> assertTrue(responseList.get(0).getCheck_inDate().equals(present1.getCheck_inDate())),
-				  ()-> assertTrue(responseList.get(0).getCheck_outDate().equals(present1.getCheck_outDate())),
-				  ()-> assertTrue(responseList.get(0).getGuestId().equals(present1.getGuestId())),
-				  ()-> assertTrue(responseList.get(0).getNumberofAdults().equals(present1.getNumberofAdults())),
-				  ()-> assertTrue(responseList.get(0).getNumberOfChildren().equals(present1.getNumberOfChildren())),
-				  ()-> assertTrue(responseList.get(0).getRoomNumbers().equals(present1.getRoomNumbers())),
-				  ()-> assertTrue(responseList.get(0).getRoomType().equals(present1.getRoomType())));
+		assertAll(()-> assertTrue(responseList.get(0).getCheck_inDate().equals(present.getCheck_inDate())),
+				  ()-> assertTrue(responseList.get(0).getCheck_outDate().equals(present.getCheck_outDate())),
+				  ()-> assertTrue(responseList.get(0).getGuestId().equals(present.getGuestId())),
+				  ()-> assertTrue(responseList.get(0).getNumberofAdults().equals(present.getNumberofAdults())),
+				  ()-> assertTrue(responseList.get(0).getNumberOfChildren().equals(present.getNumberOfChildren())),
+				  ()-> assertTrue(responseList.get(0).getRoomNumbers().equals(present.getRoomNumbers())),
+				  ()-> assertTrue(responseList.get(0).getRoomType().equals(present.getRoomType())));
 		
 	}
 	
